@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+        <data>
+        <record id="route_list" model="report.paperformat">
+            <field name="name">Маршрутный лист</field>
+            <field name="default" eval="True"/>
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">1</field>
+            <field name="margin_bottom">1</field>
+            <field name="margin_left">1</field>
+            <field name="margin_right">1</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">15</field>
+        </record>
+
+        <record id="route_list_report" model="ir.actions.report">
+                <field name="name">Маршрутный лист</field>
+                <field name="model">mrp.production</field>
+                <field name="report_name">route_list.template_route_list</field>
+                <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+                <field name="binding_type">report</field>
+                <field name="paperformat_id" ref="route_list"/>
+        </record>
+
+        <template id="template_route_list">
+                <t t-call="web.basic_layout">
+                    <t t-foreach="docs" t-as="sp">
+                            <div class="page">
+                                <style>
+                                    table {border-top: #000000 1px solid; border-bottom: #000000 1px solid; border-right: #000000 1px solid; border-left: #000000 1px solid; table-layout: fixed; padding: 0px; padding-left: 2px; vertical-align:center; border-collapse:collapse; width: 100%; font-family: Calibri; font-style: normal; text-align: center; }
+                                    tr {border-top: #000000 1px solid; border-bottom: #000000 1px solid; border-right: #000000 1px solid; border-left: #000000 1px solid;}
+                                    td {border-top: #000000 1px solid; border-bottom: #000000 1px solid; border-right: #000000 1px solid; border-left: #000000 1px solid; text-align: left; vertical-align: center; font-family: Calibri; font-size: 12pt; padding-left: 5px;}
+                                    td.s1 {height: 30px; vertical-align: center; text-align: center}
+                                    td.s2 {font-size: 7pt; text-align: center; vertical-align: center;}
+                                    td.s3 {font-size: 9pt; height: 30px; vertical-align: center;}
+                                </style>
+                                <t t-set="x" t-value="1"/>
+                                <t t-set="y" t-value="1"/>
+                                <t t-if="sp.product_id.multiplicity_on_pallet != 0"><t t-set="count" t-value="int((sp.product_qty/sp.product_id.multiplicity_on_pallet)+1)"/></t>
+                                <t t-else=""><t t-set="count" t-value="1"/></t>
+                                <t t-foreach="count" t-as="spp">
+                                    <table cellspacing="0">
+                                            <col width="13.5%"/>
+                                            <col width="13.5%"/>
+                                            <col width="13.5%"/>
+                                            <col width="13.5%"/>
+                                            <col width="11.5%"/>
+                                            <col width="11.5%"/>
+                                            <col width="11.5%"/>
+                                            <col width="11.5%"/>
+                                            <tr style="height: 320px; border-bottom: #000000 2px dashed;">
+                                                <td colspan="8"></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" style="font-size: 9pt; height:55px;">Документ № MDLM-020<br/>Версия: 2</td>
+                                                <td colspan="2" style="font-size: 9pt;">Действует с: 01.04.2023<br/>Разработал: Пивоваров Е.С.</td>
+                                                <td colspan="4" rowspan="3"><div style="font-size: 90pt; text-align: center"><b><t t-esc="sp.product_id.name.split('.')[0]"/></b></div><br/><div style="font-size:18px; text-align: center; vertical-align: top;"><t t-esc="sp.product_id.name.split('.')[1]"/></div> </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td colspan="2" style="height: 55px; vertical-align: center;">№ паллеты ЛДСП</td>
+                                                <td colspan="2"></td>
+                                                <td colspan="2"></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+
+                                            <tr>
+                                                <td colspan="2" style="height:55px; vertical-align: center;">Кол-во деталей паллете/<br/>Общее количество</td>
+                                                <td colspan="2" style="font-size: 6pt; vertical-align: top;">
+                                                    <div style="font-size: 25pt; text-align:center; vertical-align: center;">
+                                                        <t t-if="sp.product_id.multiplicity_on_pallet != 0">
+                                                                <t t-esc="int(sp.product_id.multiplicity_on_pallet)"/> / <t t-esc="int(sp.product_id.multiplicity_on_pallet * x)"/>
+                                                                <t t-set="x" t-value="x+1"/>
+                                                        </t>
+                                                        <t t-else=""></t>
+                                                    </div>
+                                                </td>
+                                                <td colspan="4"></td>
+                                            </tr>
+
+                                            <tr>
+                                                <td colspan="8" style="text-align: center; height: 20px;">Обработка</td>
+                                            </tr>
+
+                                            <tr style=" vertical-align: center;">
+                                                <td rowspan="2" class="s1" style="text-align: center;">Участок<br/>Станок</td>
+                                                <td rowspan="2" colspan="2" class="s1">ФИО<br/>бригадира</td>
+                                                <td rowspan="2" class="s1">Дата</td>
+                                                <td colspan="2" class="s1">Кол-во годных<br/>деталей</td>
+                                                <td colspan="2" class="s1">Брак(шт.)</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td class="s2">Поступило в<br/>обработку</td>
+                                                <td class="s2">Поступило в<br/>последующую обработку</td>
+                                                <td class="s2">Настройка</td>
+                                                <td class="s2">По иным<br/>причинам</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="s1"></td>
+                                                <td colspan="2" class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="s1"></td>
+                                                <td colspan="2" class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                            </tr>
+                                            <tr>
+                                               <td class="s1"></td>
+                                                <td colspan="2" class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="s1"></td>
+                                                <td colspan="2" class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="s1"></td>
+                                                <td colspan="2" class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="s1"></td>
+                                                <td colspan="2" class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="s1"></td>
+                                                <td colspan="2" class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="s1"></td>
+                                                <td colspan="2" class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                                <td class="s1"></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" class="s3">Деталь готова<br/>(отметка ответственного лица)</td>
+                                                <td></td>
+                                                <td colspan="2" class="s3">Итоговое кол-во<br/>деталей</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="5" style="font-size: 70pt; text-align:center; vertical-align:center; height:200px;">
+                                                    <span t-field="sp.product_id.collection_categ_ids"/>
+                                                </td>
+                                                <td colspan="3" style="text-align: center; vertical-align: center; font-size:30pt;">
+                                                    <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', sp.name, 280, 180)"/>
+                                                    <br/>
+                                                    <div style="vertical-align:bottom;">
+                                                        <t t-if="sp.product_id.multiplicity_on_pallet != 0">
+                                                                    <t t-esc="y"/> / <t t-esc="count"/>
+                                                                    <t t-set="y" t-value="y+1"/>
+                                                            </t>
+                                                        <t t-else=""></t>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                    </table>
+                                    <div style="page-break-after: always;"/>
+                                </t>
+                            </div>
+                    </t>
+                </t>
+        </template>
+        </data>
+</odoo>
